@@ -1,7 +1,7 @@
 var assert = require('assert');
 
 var Log = function(args){
-    assert.ok(args.subject && args.entry && agrs.userId, 'Need subject, entry and userId');
+    assert.ok(args.subject && args.entry && args.userId, 'Need subject, entry and userId');
 
     var log = {};
     log.subject = args.subject;
@@ -12,3 +12,5 @@ var Log = function(args){
     return log;
 
 };
+
+module.exports = Log;

@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "author": "Dax A. Sorbito",
   "description": "Membership module for myFroggyFrogy",
-  "dependencies": {},
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "secondthought": "0.0.4"
+  },
   "devDependencies": {
     "grunt": "*",
     "grunt-contrib-jshint": "*",
