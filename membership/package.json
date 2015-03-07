@@ -1,5 +1,7 @@
 {
-  "name": "froggyfrog",
+  "name": "myFroggyFrog-membership",
+  "author": "Dax A. Sorbito",
+  "description" : "Membership module for myFroggyFrogy",
   "dependencies": {
     
   },
