@@ -1,0 +1,11 @@
+{
+  "name": "froggyfrog",
+  "dependencies": {
+    
+  },
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-watch": "*"
+  }
+}
