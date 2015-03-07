@@ -1,13 +1,13 @@
 {
   "name": "myFroggyFrog-membership",
+  "version": "0.0.0",
   "author": "Dax A. Sorbito",
-  "description" : "Membership module for myFroggyFrogy",
-  "dependencies": {
-    
-  },
+  "description": "Membership module for myFroggyFrogy",
+  "dependencies": {},
   "devDependencies": {
     "grunt": "*",
     "grunt-contrib-jshint": "*",
-    "grunt-contrib-watch": "*"
+    "grunt-contrib-watch": "*",
+    "should": "^5.1.0"
   }
 }
