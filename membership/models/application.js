@@ -9,8 +9,6 @@ var Application = function(args){
     app.user = null;
 
     app.isValid = function(){
-        console.log('app.status >>>>' + app.status);
-        console.log('app.message >>>>'+  app.message);
         return app.status == 'validated';
     };
 
@@ -24,7 +22,6 @@ var Application = function(args){
     };
 
     app.validate = function(message){
-        console.log('enter validated');
         app.status = 'validated';
     };
 

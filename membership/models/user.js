@@ -5,6 +5,9 @@ var  User = function(args) {
     assert.ok(args.email, 'Email is required');
 
     var user = {};
+    if(args.id){
+        user.id = args.id;
+    }
     user.email = args.email;
     user.createdAt = args.createdAt || new Date();
     user.status = args.status || 'pending';
@@ -15,7 +18,7 @@ var  User = function(args) {
     user.reminderSentAt = args.reminderSentAt || null;
     user.reminderToken = args.reminderToken || null;
     user.authenticationToken = args.authenticationToken || utility.randomString(18);
-
+    user.hashedPassword = args.hashedPassword || null;
 
     return user;
 
