@@ -4,6 +4,7 @@ var db = require('secondthought');
 var assert = require('assert');
 var bc = require('bcrypt-nodejs');
 var Log = require('../models/log');
+var Q = require('q');
 
 var RegResult = function(){
 
@@ -31,21 +32,36 @@ var Registration = function(db){
         }
     };
 
-    var checkIfUserExists = function(app, next){
-        db.users.exists({email : app.email}, next);
+    var checkIfUserExists = function(app){
+        var deferred = Q.defer();
+        db.users.exists({email : app.email}, function(err, exists) {
+            if(err) deferred.reject(err);
+            deferred.resolve(exists);
+        });
+        return deferred.promise;
     };
 
-    var saveUser = function(user, next){
-        db.users.save(user, next);
+    var saveUser = function(user){
+        var deferred = Q.defer();
+        db.users.save(user, function(err, newUser){
+            if(err) deferred.reject(err);
+            deferred.resolve(newUser);
+        });
+        return deferred.promise;
     };
 
-    var addLogEntry = function(user, next){
+    var addLogEntry = function(user){
+        var deferred = Q.defer();
         var log = new Log({
             subject : 'Registration',
             userId : user.id,
             entry : 'Successfully Registered'
         });
-        db.logs.save(log, next);
+        db.logs.save(log, function(err, newLog) {
+            if(err) deferred.reject(err);
+            deferred.resolve(newLog);
+        });
+        return deferred.promise;
     };
 
     self.applyForMembership = function(args, next) {
@@ -58,45 +74,79 @@ var Registration = function(db){
 
         if(app.status === 'validated') {
             // check to see if email exists
-            checkIfUserExists(app, function(err, exists){
-                console.log(exists);
-                assert.ok(err === null, err);
-                if(!exists){
-                    // create a new user
-                    var user = new User(app);
-                    user.status = 'approved';
-                    user.signInCount = 1;
+            checkIfUserExists(app)
+                .then(function(exists) {
+                    console.log('exists >>>' + exists);
+                    if (!exists) {
+                        // create a new user
+                        var user = new User(app);
+                        user.status = 'approved';
+                        user.signInCount = 1;
 
-                    // hash the password
-                    user.hashedPassword = bc.hashSync(app.password);
+                        // hash the password
+                        user.hashedPassword = bc.hashSync(app.password);
+                        saveUser(user)
+                            .then(function (newUser) {
+                                regResult.user = newUser;
+                                addLogEntry(newUser)
+                                    .then(function(newLog){
+                                        regResult.log = newLog;
+                                        regResult.success = true;
+                                        regResult.message = 'Welcome!';
 
-                    // save the user
-                    saveUser(user, function(err, newUser){
-                        assert.ok(err === null, err);
-                        regResult.user = newUser;
-
-                        // create a log entry
-                        addLogEntry(newUser, function(err, newLog){
-                            regResult.log = newLog;
-                            regResult.success = true;
-                            regResult.message = 'Welcome!';
-
-                            next(null, regResult);
-                        });
-
-                    });
-
-                } else {
-                    regResult.message = 'User already exist!';
-                    next(null, regResult);
-                }
-
-            });
+                                        next(null, regResult);
+                                    });
+                            });
+                    } else {
+                        regResult.message = 'User already exist!';
+                        next(null, regResult);
+                    }
+                });
         } else {
             regResult.message = app.message;
             next(null, regResult);
-
         }
+
+
+        //    checkIfUserExists(app, function(err, exists){
+        //        console.log(exists);
+        //        assert.ok(err === null, err);
+        //        if(!exists){
+        //            // create a new user
+        //            var user = new User(app);
+        //            user.status = 'approved';
+        //            user.signInCount = 1;
+        //
+        //            // hash the password
+        //            user.hashedPassword = bc.hashSync(app.password);
+        //
+        //            // save the user
+        //            saveUser(user, function(err, newUser){
+        //                assert.ok(err === null, err);
+        //                regResult.user = newUser;
+        //
+        //                // create a log entry
+        //                addLogEntry(newUser, function(err, newLog){
+        //                    regResult.log = newLog;
+        //                    regResult.success = true;
+        //                    regResult.message = 'Welcome!';
+        //
+        //                    next(null, regResult);
+        //                });
+        //
+        //            });
+        //
+        //        } else {
+        //            regResult.message = 'User already exist!';
+        //            next(null, regResult);
+        //        }
+        //
+        //    });
+        //} else {
+        //    regResult.message = app.message;
+        //    next(null, regResult);
+        //
+        //}
 
     };
 };

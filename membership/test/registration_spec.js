@@ -1,5 +1,6 @@
 var Registration = require('../lib/registration');
 var db = require('secondthought');
+var Q = require('q');
 
 describe('Registration', function(){
     var reg = {};

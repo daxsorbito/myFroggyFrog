@@ -5,6 +5,7 @@
   "description": "Membership module for myFroggyFrogy",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
+    "q": "^1.2.0",
     "secondthought": "0.0.4"
   },
   "devDependencies": {
