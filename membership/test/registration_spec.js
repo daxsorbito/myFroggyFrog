@@ -142,7 +142,7 @@ describe('Registration', function(){
             regResult.success.should.equal(false);
         });
         it('tells usr that email already exists', function(){
-            regResult.message.should.equal('User already exist!');
+            regResult.message.should.equal('This email already exists');
         });
     });
 });
