@@ -49,22 +49,99 @@ describe('Registration', function(){
     });
 
     describe('an empty or null email', function(){
-        it('is not successful');
-        it('tells user that email is required');
+        var regResult = {};
+        before(function(done) {
+            db.users.destroyAll(function(err, result){
+                reg.applyForMembership({},
+                    function (err, result) {
+                        regResult = result;
+                        done();
+                    });
+            });
+
+        });
+        it('is not successful', function(){
+            regResult.success.should.equal(false);
+        });
+        it('tells user that email is required', function(){
+            regResult.message.should.equal('Email and password are required');
+        });
     });
 
     describe('empty or null password', function(){
-        it('is not successful');
-        it('tells user that password is required');
+        var regResult = {};
+        before(function(done) {
+            db.users.destroyAll(function(err, result){
+                reg.applyForMembership({
+                        email: 'daxsorbito+devtest@gmail.com'
+                    },
+                    function (err, result) {
+                        regResult = result;
+                        done();
+                    });
+            });
+
+        });
+        it('is not successful', function(){
+            regResult.success.should.equal(false);
+        });
+        it('tells user that password is required', function(){
+            regResult.message.should.equal('Email and password are required');
+        });
     });
 
     describe('password and confirm mismatch', function(){
-        it('is not successful');
-        it('tells user passwords don\'t match')
+        var regResult = {};
+        before(function(done) {
+            db.users.destroyAll(function(err, result){
+                reg.applyForMembership({
+                        email: 'daxsorbito+devtest@gmail.com',
+                        password: '1234',
+                        confirm: '4321'
+                    },
+                    function (err, result) {
+                        regResult = result;
+                        done();
+                    });
+            });
+
+        });
+        it('is not successful', function(){
+            regResult.success.should.equal(false);
+        });
+        it('tells user passwords don\'t match', function(){
+            regResult.message.should.equal('Password don\'t match');
+        });
     });
 
     describe('email already exists', function(){
-        it('is not successful');
-        it('tells usr that email already exists');
+        var firstRegResult = {};
+        var regResult = {};
+        before(function(done) {
+            reg.applyForMembership({
+                    email: 'daxsorbito+devtest@gmail.com',
+                    password: '1234',
+                    confirm: '1234'
+                },
+                function (err, result) {
+                    firstRegResult = result;
+                    reg.applyForMembership({
+                            email: 'daxsorbito+devtest@gmail.com',
+                            password: '1234',
+                            confirm: '1234'
+                        },
+                        function (err, result) {
+                            regResult = result;
+                            done();
+                        });
+                });
+        });
+
+        it('is not successful', function() {
+            regResult.success.should.equal(false);
+        });
+        it('tells usr that email already exists', function(){
+            regResult.message.should.equal('User already exist!');
+        });
     });
 });

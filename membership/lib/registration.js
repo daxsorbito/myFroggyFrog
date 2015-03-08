@@ -56,38 +56,48 @@ var Registration = function(db){
         // validate inputs
         validateInputs(app);
 
-        // check to see if email exists
-        checkIfUserExists(app, function(err, exists){
-            console.log(exists);
-            assert.ok(err === null, err);
-            if(!exists){
-                // create a new user
-                var user = new User(app);
-                user.status = 'approved';
-                user.signInCount = 1;
+        if(app.status === 'validated') {
+            // check to see if email exists
+            checkIfUserExists(app, function(err, exists){
+                console.log(exists);
+                assert.ok(err === null, err);
+                if(!exists){
+                    // create a new user
+                    var user = new User(app);
+                    user.status = 'approved';
+                    user.signInCount = 1;
 
-                // hash the password
-                user.hashedPassword = bc.hashSync(app.password);
+                    // hash the password
+                    user.hashedPassword = bc.hashSync(app.password);
 
-                // save the user
-                saveUser(user, function(err, newUser){
-                    assert.ok(err === null, err);
-                    regResult.user = newUser;
+                    // save the user
+                    saveUser(user, function(err, newUser){
+                        assert.ok(err === null, err);
+                        regResult.user = newUser;
 
-                    // create a log entry
-                    addLogEntry(newUser, function(err, newLog){
-                        regResult.log = newLog;
-                        regResult.success = true;
-                        regResult.message = 'Welcome!';
+                        // create a log entry
+                        addLogEntry(newUser, function(err, newLog){
+                            regResult.log = newLog;
+                            regResult.success = true;
+                            regResult.message = 'Welcome!';
 
-                        next(null, regResult);
+                            next(null, regResult);
+                        });
+
                     });
 
-                });
+                } else {
+                    regResult.message = 'User already exist!';
+                    next(null, regResult);
+                }
 
-            }
+            });
+        } else {
+            regResult.message = app.message;
+            next(null, regResult);
 
-        });
+        }
+
     };
 };
 
