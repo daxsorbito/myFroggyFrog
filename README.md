@@ -16,4 +16,4 @@ A sample application that uses the following:
 
 ### To run the test
 1. Open _membership_ folder
-2. Run mocha
+2. Run _mocha_
