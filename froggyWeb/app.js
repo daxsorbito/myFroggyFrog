@@ -4,20 +4,22 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var flash = require('connect-flash');
+var session = require('express-session');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
+var account = require('./routes/account');
 
 var app = express();
 
 var passport = require('passport')
     , LocalStrategy = require('passport-local').Strategy;
 var Membership = require('membership');
+var memb = new Membership('membership');
 
 passport.use(new LocalStrategy(
-    function(username, password, done){
+    function(email, password, done){
 
-        var memb = new Membership('membership');
         memb.authenticate(email, password, function(err, authResult){
             if(authResult.success){
                 done(null, authResult.user);
@@ -27,6 +29,14 @@ passport.use(new LocalStrategy(
         });
     }
 ));
+
+passport.serializeUser(function(user,done){
+    done(null, user.authenticationToken);
+});
+
+passport.deserializeUser(function(token, done){
+    memb.findUserByToken(token,done);
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -40,8 +50,18 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({secret: 'mgabayotmo'}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
+
 app.use('/', routes);
-app.use('/users', users);
+//app.use('/users', users);
+app.use('/account', account);
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
