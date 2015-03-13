@@ -15,5 +15,5 @@ A sample application that uses the following:
 5. Open the froggyWeb folder and run the application: _DEBUG=froggyWeb:* ./bin/www_
 
 ### To run the test
-1. Open membership folder
-2. Run mocha: _mocha_
+1. Open _membership_ folder
+2. Run mocha
